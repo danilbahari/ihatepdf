@@ -4,7 +4,7 @@ Project ini adalah perjalanan membangun aplikasi PDF offline (seperti iLovePDF, 
 
 ## 🚀 Progress
 - [x] Step 01: Basic compress PDF
-- [ ] Step 02: Merge PDF
+- [X] Step 02: Merge PDF
 - [ ] Step 03: CLI tools
 - [ ] Step 04: Web app (FastAPI)
 - [ ] Step 05: UI + TailwindCSS
@@ -14,3 +14,6 @@ Project ini adalah perjalanan membangun aplikasi PDF offline (seperti iLovePDF, 
 ### Compress PDF
 ```bash
 python compress_pdf.py input.pdf output.pdf
+
+### Merge PDF
+python merge_pdf.py hasil.pdf file1.pdf file2.pdf file3.pdf
