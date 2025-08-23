@@ -23,6 +23,7 @@ python merge_pdf.py hasil.pdf file1.pdf file2.pdf file3.pdf
 python split_pdf.py dokumen.pdf hasil_split
 
 ### Extract PDF
+pip install pdfminer.six
 python extract_text.py contoh.pdf
 
-*Stuck di tahap ekstraksi teks karena PyPDF2 tidak selalu bisa membaca semua PDF (terutama PDF hasil scan).
+*berhasil baca teks lebih rapi, tapi masih gagal untuk PDF hasil scan.
