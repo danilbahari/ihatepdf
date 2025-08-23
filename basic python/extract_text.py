@@ -10,7 +10,7 @@ def extract_text(input_file):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("❌ Cara pakai: python extract_text.py input.pdf")
+        print("Cara pakai: python extract_text.py input.pdf")
         sys.exit(1)
 
     input_pdf = sys.argv[1]
