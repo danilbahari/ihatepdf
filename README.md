@@ -1,2 +1,16 @@
-# ihate-pdf
-Portofolio project: membangun aplikasi PDF tools (compress, merge, split, dll) step by step dari Python script sampai web app.
+# iHatePDF (Offline Tools)
+
+Project ini adalah perjalanan membangun aplikasi PDF offline (seperti iLovePDF, tapi internal dan open source).
+
+## 🚀 Progress
+- [x] Step 01: Basic compress PDF
+- [ ] Step 02: Merge PDF
+- [ ] Step 03: CLI tools
+- [ ] Step 04: Web app (FastAPI)
+- [ ] Step 05: UI + TailwindCSS
+- [ ] Step 06: Authentication + Deployment
+
+## 📌 Cara Pakai (sementara)
+### Compress PDF
+```bash
+python compress_pdf.py input.pdf output.pdf
