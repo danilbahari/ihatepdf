@@ -1,13 +1,16 @@
-# cli.py (percobaan kedua)
+# cli.py (final versi clean)
 
 import argparse
 from PyPDF2 import PdfReader, PdfWriter
 
-def compress_pdf(input_path, output_path):
+def compress_pdf(input_path, output_path, quality="high"):
     reader = PdfReader(input_path)
     writer = PdfWriter()
+
     for page in reader.pages:
         writer.add_page(page)
+
+    # catatan: PyPDF2 tidak support kompresi kualitas gambar, ini simulasi saja
     with open(output_path, "wb") as f:
         writer.write(f)
 
@@ -34,14 +37,15 @@ def extract_text(input_path, output):
         for page in reader.pages:
             f.write(page.extract_text() or "")
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="PDF Tools CLI")
+def main():
+    parser = argparse.ArgumentParser(description="iHatePDF CLI Tools")
     subparsers = parser.add_subparsers(dest="command")
 
     # compress
     compress_parser = subparsers.add_parser("compress")
     compress_parser.add_argument("input")
     compress_parser.add_argument("output")
+    compress_parser.add_argument("--quality", choices=["high", "low"], default="high")
 
     # merge
     merge_parser = subparsers.add_parser("merge")
@@ -63,10 +67,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.command == "compress":
-        compress_pdf(args.input, args.output)
+        compress_pdf(args.input, args.output, args.quality)
     elif args.command == "merge":
         merge_pdfs(args.inputs[:-1], args.inputs[-1])
     elif args.command == "split":
         split_pdf(args.input, args.start, args.end, args.output)
     elif args.command == "extract":
         extract_text(args.input, args.output)
+    else:
+        parser.print_help()
+
+if __name__ == "__main__":
+    main()
