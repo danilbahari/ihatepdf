@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kompres PDF - Aplikasi Kantor</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <h2>Kompres PDF</h2>
+  <form action="/kompres" enctype="multipart/form-data" method="post">
+    <input type="file" name="file" accept=".pdf" required />
+    <button type="submit">Kompres PDF</button>
+  </form>
+</body>
+</html>
