@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kompres PDF - Aplikasi Kantor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-white shadow-xl rounded-xl w-full max-w-xl p-6 space-y-6">
+    <h1 class="text-2xl font-bold text-center text-blue-700">Aplikasi Kompres PDF Kantor</h1>
+
+    <!-- Dropzone -->
+    <div id="dropzone"
+         class="border-2 border-dashed border-blue-400 rounded-lg p-8 text-center cursor-pointer hover:bg-blue-50 transition"
+         onclick="document.getElementById('fileInput').click()">
+      <p class="text-gray-600">Tarik & letakkan file PDF di sini atau klik untuk memilih file</p>
+    </div>
+
+    <!-- File input -->
+    <input type="file" id="fileInput" class="hidden" accept=".pdf" />
+
+    <!-- Pilih kualitas -->
+    <div>
+      <label for="quality" class="block mb-2 font-medium">Pilih Kualitas Kompresi:</label>
+      <select id="quality" class="w-full border border-gray-300 rounded p-2">
+        <option value="low">Rendah (ukuran kecil, kualitas biasa)</option>
+        <option value="medium" selected>Sedang (seimbang)</option>
+        <option value="high">Tinggi (kualitas lebih baik)</option>
+      </select>
+    </div>
+
+    <!-- Tombol Kompres -->
+    <button onclick="compressPDF()"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition">
+      Kompres PDF
+    </button>
+
+    <!-- Notifikasi -->
+    <div id="notif" class="text-center text-sm text-gray-500 mt-4"></div>
+  </div>
+
+  <script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const notif = document.getElementById('notif');
+
+    // Drag & Drop
+    dropzone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropzone.classList.add("bg-blue-100");
+    });
+
+    dropzone.addEventListener("dragleave", () => {
+      dropzone.classList.remove("bg-blue-100");
+    });
+
+    dropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropzone.classList.remove("bg-blue-100");
+      fileInput.files = e.dataTransfer.files;
+    });
+
+    // Tombol Kompres
+    function compressPDF() {
+      const file = fileInput.files[0];
+      if (!file) {
+        notif.innerText = "Silakan pilih file PDF terlebih dahulu.";
+        notif.classList.add("text-red-500");
+        return;
+      }
+
+      notif.innerText = `File "${file.name}" siap dikompres dengan kualitas "${document.getElementById('quality').value}".`;
+      notif.classList.remove("text-red-500");
+      notif.classList.add("text-green-600");
+
+      // TODO: Integrasi ke backend Flask
+    }
+  </script>
+
+</body>
+</html>
