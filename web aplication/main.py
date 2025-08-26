@@ -1,29 +1,36 @@
-from fastapi import FastAPI, Request, File, UploadFile, Form
-from fastapi.responses import HTMLResponse, FileResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI, UploadFile, File
+import shutil
 import os
-from tools import kompres_pdf  # Import fungsi dari tools.py
+from tools import compress_pdf
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+UPLOAD_DIR = "uploaded"
+OUTPUT_DIR = "output"
 
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+@app.get("/")
+async def root():
+    return {"message": "Aplikasi PDF Offline Siap Digunakan!"}
 
-@app.post("/kompres")
-async def kompres(request: Request, file: UploadFile = File(...)):
-    file_location = f"{UPLOAD_FOLDER}/{file.filename}"
-    with open(file_location, "wb") as f:
-        f.write(await file.read())
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    file_location = f"{UPLOAD_DIR}/{file.filename}"
+    with open(file_location, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    return {"message": "File uploaded successfully", "filename": file.filename}
 
-    output_path = f"{UPLOAD_FOLDER}/compressed_{file.filename}"
-    kompres_pdf(file_location, output_path)
+@app.post("/compressed")
+async def compress_uploaded_pdf(file: UploadFile = File(...)):
+    input_path = f"{UPLOAD_DIR}/{file.filename}"
+    output_path = f"{OUTPUT_DIR}/compressed_{file.filename}"
 
-    return FileResponse(output_path, media_type='application/pdf', filename=f"compressed_{file.filename}")
+    with open(input_path, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+
+    # Kompres PDF
+    compress_pdf(input_path, output_path)
+
+    return {"message": "File berhasil dikompres", "output_file": output_path}
