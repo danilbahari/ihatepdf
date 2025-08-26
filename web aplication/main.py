@@ -1,36 +1,42 @@
-from fastapi import FastAPI, UploadFile, File
-import shutil
-import os
+from fastapi import FastAPI, File, UploadFile, Form
+from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from tools import compress_pdf
+import os
+import shutil
+from pathlib import Path
 
 app = FastAPI()
 
-UPLOAD_DIR = "uploaded"
-OUTPUT_DIR = "output"
+# Folder statis (buat file HTML dan hasil download)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+# Folder upload dan hasil
+UPLOAD_FOLDER = "uploads"
+RESULT_FOLDER = "results"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(RESULT_FOLDER, exist_ok=True)
 
-@app.get("/")
-async def root():
-    return {"message": "Aplikasi PDF Offline Siap Digunakan!"}
+# Tampilkan halaman utama
+@app.get("/", response_class=HTMLResponse)
+async def read_index():
+    with open("index.html", "r", encoding="utf-8") as f:
+        return f.read()
 
-@app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
-    file_location = f"{UPLOAD_DIR}/{file.filename}"
-    with open(file_location, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    return {"message": "File uploaded successfully", "filename": file.filename}
+# Endpoint untuk kompres PDF
+@app.post("/compress")
+async def compress(file: UploadFile = File(...)):
+    input_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    output_path = os.path.join(RESULT_FOLDER, "compressed_" + file.filename)
 
-@app.post("/compressed")
-async def compress_uploaded_pdf(file: UploadFile = File(...)):
-    input_path = f"{UPLOAD_DIR}/{file.filename}"
-    output_path = f"{OUTPUT_DIR}/compressed_{file.filename}"
-
+    # Simpan file yang diupload
     with open(input_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
-    # Kompres PDF
-    compress_pdf(input_path, output_path)
+    # Panggil fungsi kompres dari tools.py
+    success, message = compress_pdf(input_path, output_path)
 
-    return {"message": "File berhasil dikompres", "output_file": output_path}
+    if success:
+        return FileResponse(path=output_path, filename="compressed_" + file.filename, media_type='application/pdf')
+    else:
+        return {"error": message}
